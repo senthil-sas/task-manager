@@ -1,22 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  { path: '/', name: 'login', component: () => import('../views/login.vue') },
   {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/dashboard', name: "dashboard", component: () => import('../views/dashboard.vue'),
+    children: [
+      { path: '/employee', name: 'employee', component: () => import('../views/employee.vue') },
+      { path: '/customer', name: 'customer', component: () => import('../views/customer.vue') },
+      { path: '/project', name: 'project', component: () => import('../views/project.vue') },
+      { path: '/task', name: 'tasks', component: () => import('../views/task.vue') },
+      { path: '/team', name: 'teams', component: () => import('../views/team.vue') },
+      { path: '/report', name: 'reports', component: () => import('../views/reports.vue') },
+      { path: '/task1', name: 'tasks1', component: () => import('../views/task1.vue') },
+      { path: '/kanbanBoard', name: 'kanbanBoard', component: () => import('../views/kanbanBoard.vue') },
+    ]
   }
 ]
 
