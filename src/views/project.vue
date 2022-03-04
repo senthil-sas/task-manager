@@ -5,7 +5,7 @@
       <v-btn depressed color="primary" class="text-capitalize">Add</v-btn>
     </div>
     <v-card class="ma-4">
-      <v-simple-table fixed-header height="86vh" id="tableData">
+      <v-simple-table fixed-header  id="tableData">
         <thead>
           <tr class="tableRow">
             <th class="tableHeader bg-lightgrey">Project Name</th>
