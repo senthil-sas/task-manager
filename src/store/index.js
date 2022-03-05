@@ -36,10 +36,10 @@ export default new Vuex.Store({
     },
     setExpandPanel ( state, payload ) {
       state.expandPanel = payload
-      state.panelWidth = payload ? '100%' : '40%'
+      state.panelWidth = payload ? 'calc(100% - 74px)' : '40%'
     }
   },
-  actions: { },
+  actions: {},
   getters: {
     getLoader: state => {
       return state.loader
