@@ -42,10 +42,24 @@ export default {
     ],
   }),
   methods: {
-    login() {
-      this.$store.dispatch("login/login", {
+    async login() {
+      await this.$store.dispatch("login/login", {
         emp_email: this.userName,
         password: this.password,
+      });
+      this.$toast.success("Checkin Successfully", {
+        position: "top-right",
+        timeout: 1500,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
       });
     },
   },

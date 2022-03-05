@@ -227,7 +227,7 @@ export default {
   watch: {
     taskSwitch(bool) {
       this.$store.commit(
-        "task/setCurrentTaks",
+        "task/setCurrentTasks",
         bool ? this.totalTasks : this.currentUserTasks
       );
     },

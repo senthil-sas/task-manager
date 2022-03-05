@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 * {font-family: "Open Sans", sans-serif}
 html{overflow-y: auto !important;}
-.fsize24{font-size: 24px}
-.fsize22{font-size: 22px}
-.fsize10{font-size: 10px}
-.fsize11{font-size: 11px}
+.fsize24{font-size: 24px !important}
+.fsize22{font-size: 22px !important}
+.fsize9{font-size: 9px !important}
+.fsize10{font-size: 10px !important}
+.fsize11{font-size: 11px !important}
 .fsize12{font-size: 12px !important}
 .fsize13{font-size: 13px !important}
 .fsize14{font-size: 14px !important;}
@@ -35,3 +36,4 @@ html{overflow-y: auto !important;}
 .openBtn{background: rgb(241, 241, 241);border: 1px solid #e6e6e6;border-radius: 4px;transition: all .3s ease-in-out;padding: 4px 8px;min-width: 95px;}
 .fixedBtn{background: #f1ffe9;border: 1px solid #f1ffe9;border-radius: 4px;transition: all .3s ease-in-out;padding: 4px 8px;min-width: 95px;}
 .user-select-none{user-select: none !important;}
+.radio-switch .v-label {font-size: 14px;}

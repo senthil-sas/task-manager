@@ -3,12 +3,14 @@
     <div class="mx-4 mt-4 d-flex">
       <v-breadcrumbs color="indigo--text" class="pa-0" :items="titles" large></v-breadcrumbs>
       <v-spacer></v-spacer>
-      <v-radio-group v-model="taskSwitch" row dense>
-        <v-radio label="All Task" value="all" hide-details></v-radio>
+      <v-radio-group v-model="taskSwitch" class="radio-switch" row dense>
         <v-radio label="My Task" value="user" hide-details></v-radio>
+        <v-radio label="Attached" value="attached" hide-details></v-radio>
+        <v-radio label="All Task" value="all" hide-details></v-radio>
+        
       </v-radio-group>
       <div class="d-flex align-center">
-        <v-btn depressed color="light-blue" class="white--text text-capitalize">
+        <v-btn @click="sortTasks()" depressed color="light-blue" class="white--text text-capitalize">
           <v-icon color="white" left>mdi-sort</v-icon>
           Sort
         </v-btn>
@@ -38,15 +40,14 @@
             <v-flex xs3>
               <span class="fsize12 secondaryColor">{{i.task_status}}</span>
             </v-flex>
-            <v-flex xs3><v-btn min-width="86" depressed rounded height="26" :color="i.priority == 'Low' ? 'teal lighten-4' : i.priority == 'Medium' ? 'amber lighten-4' : i.priority == 'High' ? 'red lighten-4' : 'grey'"
+            <v-flex xs3><v-btn min-width="86" depressed rounded-lg height="26" :color="i.priority == 'Low' ? 'teal lighten-4 teal--text' : i.priority == 'Medium' ? 'amber lighten-4 orange--text' : i.priority == 'High' ? 'red lighten-4 red--text' : 'grey white--text'"
             class="fsize12 text-capitalize" >{{i.priority}}</v-btn></v-flex>
              </v-layout>
              <v-flex xs3>
-               <span class="fsize12 secondaryColor">{{i.end_date}}</span>
+               <span class="fsize12 secondaryColor">{{getDateString(new Date(i.end_date), "d-M-y")}}</span>
              </v-flex>
           </v-card>
         </div>
-
       </div>
 
       <!-- update panel -->
@@ -60,7 +61,9 @@
 <script>
 import updatePanel from "../views/sidePanelDrawer.vue";
 import { mapGetters } from "vuex";
+import commonFunc from "../mixins/common";
 export default {
+  mixins: [commonFunc],
   name: "Task",
   data: () => ({
     titles: [
@@ -72,6 +75,7 @@ export default {
     taskSwitch: 'user',
     dueDate1:'',
     dueDatePicker1: false,
+    sortingBool: true,
   }),
   components: { updatePanel },
   computed: {
@@ -107,11 +111,15 @@ export default {
       });
       this.addTaskInput = "";
     },
+    sortTasks() {
+      this.sortingBool = !this.sortingBool
+      this.$store.commit("task/setSortTasks",this.sortingBool);
+    }
   },
   watch: {
     taskSwitch(val) {
       this.$store.commit(
-        "task/setCurrentTaks",
+        "task/setCurrentTasks",
         val == 'all' ? this.totalTasks : this.currentUserTasks
       );
     },

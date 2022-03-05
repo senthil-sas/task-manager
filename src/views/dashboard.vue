@@ -23,19 +23,35 @@
       <div class="ml-3 primaryColor">{{$store.state.appName}} - <span class="text-capitalize">{{$router.currentRoute.path.replace("/", "")}}</span> </div>
       <v-spacer></v-spacer>
       <div class="text-right">
-        <v-btn @click="logout()" depressed text outlined color="indigo" class="text-capitalize fsize16">Logout</v-btn>
+        <v-avatar color="primary" class="mr-3 white--text fsize14" size="26">{{userDetails.emp_name.slice(0,1)}}</v-avatar>
+        <v-btn @click="logoutDialog = true" depressed text outlined color="indigo" class="text-capitalize fsize16">Logout</v-btn>
       </div>
     </v-app-bar>
 
     <v-main class="calcHeight-main main-content">
       <!-- <transition name="slide"> -->
-        <router-view></router-view>
+      <router-view></router-view>
       <!-- </transition> -->
     </v-main>
+
+    <v-dialog v-model="logoutDialog" width="400" overlay-color="grey">
+      <v-card class="pa-4" height="150">
+        <div class="secondaryColor fsize14">Are you sure want to logout ?</div>
+        <div class="d-flex justify-end mt-14">
+          <v-btn height="32" width="86" @click="logoutDialog = false" depressed color="lighten-4" outlined class="text-capitalize fsize12 mr-2">
+            Cancel
+          </v-btn>
+          <v-btn height="32" width="86" @click="logout()" depressed color="light-blue" class="text-capitalize white--text fsize12">
+            Confirm
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
 
   </v-app>
 </template>
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "Dashboard",
   data: () => ({
@@ -49,11 +65,12 @@ export default {
       // { text: "Task", subText: "", svg: "task", route: "task" },
       { text: "Teams", subText: "", svg: "teams", route: "team" },
       { text: "Report", subText: "", svg: "taskreports", route: "report" },
-      { text: "Task-New", subText: "", svg: "taskreports", route: "task1"},
+      { text: "Task-New", subText: "", svg: "taskreports", route: "task1" },
     ],
     drawer: null,
+    logoutDialog: false,
   }),
-  
+
   methods: {
     getImgUrl(img) {
       var images = require.context("../assets/menu/", false, /\.svg$/);
@@ -79,6 +96,13 @@ export default {
         rtl: false,
       });
       this.$router.push("/");
+    },
+  },
+
+  computed: {
+    ...mapGetters("login", ["getUserData"]),
+    userDetails() {
+      return JSON.parse(localStorage.getItem("currentUserData"));
     },
   },
 
@@ -175,8 +199,10 @@ export default {
   overflow: hidden !important;
   width: 60px;
 }
-.calcHeight-main {
+/* .calcHeight-main {
   height: calc(100vh - 56px) !important;
+} */
+.main-content {
+  background-color: #e8e8e8a6;
 }
-.main-content{background-color: #e8e8e8a6;}
 </style>
