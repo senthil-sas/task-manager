@@ -9,11 +9,11 @@
               </div>
               <div>
                 <p class="mb-2 ml-1 fsize14 primaryColor">Username</p>
-                <v-text-field v-model.trim="userName" class="fsize11" placeholder="Enter the username" :rules="userNameRules" autocomplete="on" outlined dense></v-text-field>
+                <v-text-field v-model.trim="userName" class="fsize14" placeholder="Enter the username" :rules="userNameRules" autocomplete="on" outlined dense></v-text-field>
               </div>
               <div>
                 <p class="mb-2 ml-1 fsize14 primaryColor">Password</p>
-                <v-text-field v-model="password" placeholder="Enter the password" class="fsize11" :rules="passwordRules" outlined  autocomplete="on"  dense :type="passwordShow ? 'text' : 'password'" :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'" @click:append="passwordShow = !passwordShow"></v-text-field>
+                <v-text-field v-model="password" placeholder="Enter the password" class="fsize14" :rules="passwordRules" outlined  autocomplete="on"  dense :type="passwordShow ? 'text' : 'password'" :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'" @click:append="passwordShow = !passwordShow"></v-text-field>
               </div>
               <v-btn type="submit" block depressed class="text-capitalize mt-3 primary" :disabled="!userName || !password">
                 Sign In</v-btn>
@@ -42,10 +42,24 @@ export default {
     ],
   }),
   methods: {
-    login() {
-      this.$store.dispatch("login/login", {
+    async login() {
+      await this.$store.dispatch("login/login", {
         emp_email: this.userName,
         password: this.password,
+      });
+      this.$toast.success("Checkin Successfully", {
+        position: "top-right",
+        timeout: 1500,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
       });
     },
   },

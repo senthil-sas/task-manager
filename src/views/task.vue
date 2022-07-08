@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <div class="ma-4 d-flex align-center">
       <div>
         <v-text-field v-model="search" single-line dense max-width="50%" hide-details outlined prepend-inner-icon="mdi-magnify" placeholder="Search"></v-text-field>
@@ -54,7 +54,6 @@
       </div>
     </v-card>
 
-    <!-- create Task dialog -->
     <v-row justify="center">
       <v-dialog v-model="createTaskDialog" max-width="900" persistent transition="dialog-bottom-transition">
         <v-card>
@@ -123,13 +122,46 @@
         </v-card>
       </v-dialog>
     </v-row>
+  </div> -->
+  <div>
+    <div class="ma-4 indigo--text">
+      Tasks
+    </div>
+    <div class="calcHeight-1 mx-4" v-if="customerTasks.length != 0">
+      <v-card :ripple="false" class="my-1 tasksheet align-center d-flex pl-4" min-height="56" v-for="(i,idx) in customerTasks" :key='idx'>
+        <v-layout align-center>
+          <v-flex wrap xs4><span class="fsize14">{{i.task_name}}</span></v-flex>
+          <v-flex xs3>
+            <span class="fsize12 secondaryColor">{{i.assigned_to_name}}</span>
+          </v-flex>
+          <v-flex xs3>
+            <span class="fsize12 secondaryColor">{{i.task_status}}</span>
+          </v-flex>
+          <v-flex xs3>
+            <v-btn min-width="86" depressed rounded-lg height="26" :color="i.priority == 'Low' ? 'teal lighten-4 teal--text' : i.priority == 'Medium' ? 'amber lighten-4 orange--text' : i.priority == 'High' ? 'red lighten-4 red--text' : 'grey white--text'" class="fsize12 text-capitalize">{{i.priority}}</v-btn>
+          </v-flex>
+          <v-flex xs3>
+          <span class="fsize12 secondaryColor">{{getDateString(new Date(i.end_date), "d-M-y")}}</span>
+        </v-flex>
+        </v-layout>
+        <!-- <v-flex xs1>
+          <span class="fsize12 secondaryColor">{{i.project_name}}</span>
+        </v-flex> -->
+      </v-card>
+    </div>
+    <div v-else>
+      <div class="secondaryColor d-flex align-center justify-center">
+        No Tasks Found
+      </div>
+    </div>
   </div>
-
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import commonFunc from "../mixins/common";
 export default {
+  mixins: [commonFunc],
   name: "Task",
   data: () => ({
     taskSwitch: false,
@@ -168,16 +200,16 @@ export default {
   }),
   computed: {
     ...mapGetters("task", {
-      totalTasks: "getAllTasks",
-      currentUserTasks: "getCurrentUserTaks",
-      currentTasks: "getCurrentTasks",
+      // totalTasks: "getAllTasks",
+      // currentUserTasks: "getCurrentUserTaks",
+      customerTasks: "getCustomerTasks",
     }),
     ...mapGetters({ loader: "getLoader" }),
     ...mapGetters("project", { projectList: "getProjectsList" }),
     ...mapGetters("employee", { employeeList: "getEmployeeList" }),
 
     taskFilter() {
-      return this.currentTasks.filter((data) => {
+      return this.customerTasks.filter((data) => {
         return data.task_name.toLowerCase().includes(this.search.toLowerCase());
       });
     },
@@ -213,47 +245,12 @@ export default {
       };
       // this.$store.dispatch("report/getReports",jsonObj);
     },
-    resetCreateTaskForm() {
-      this.taskName = "";
-      this.estimatedEffort = "00:00";
-      this.actualEffort = "00:00";
-      this.status = "Open";
-      this.priority = "Medium";
-      this.project = "";
-      this.assignedTo = "";
-      this.description = "";
-    },
-  },
-  watch: {
-    taskSwitch(bool) {
-      this.$store.commit(
-        "task/setCurrentTaks",
-        bool ? this.totalTasks : this.currentUserTasks
-      );
-    },
-    createTaskDialog() {
-      this.resetCreateTaskForm();
-    },
-    cTaskForm(bool) {
-      console.log("🚀 ~ file: task.vue ~ line 209 ~ cTaskForm ~ bool", bool);
-    },
-    estimatedEffort(val) {
-      console.log(
-        "🚀 ~ file: task.vue ~ line 220 ~ estimatedEffort ~ val",
-        val
-      );
-    },
-    actualEffort(val) {
-      console.log(
-        "🚀 ~ file: task.vue ~ line 220 ~ estimatedEffort ~ val",
-        val
-      );
-    },
   },
   created() {
     this.$store.dispatch("project/getProjects");
-    this.$store.dispatch("employee/getEmployees");
-    this.$store.dispatch("task/getTasks");
+    // this.$store.dispatch("employee/getEmployees");
+    // this.$store.dispatch("task/getTasks");
+    this.$store.dispatch("task/getCustomerTasks");
   },
 };
 </script>
