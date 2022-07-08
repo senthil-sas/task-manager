@@ -15,7 +15,7 @@ html{overflow-y: auto !important;}
 .secondaryColor{color:#56585a}
 .w-100{width: 100%}
 /* animated scrolbar */
-.updateForm::-webkit-scrollbar, .calcHeight::-webkit-scrollbar, .v-navigation-drawer__content::-webkit-scrollbar{
+/* .updateForm::-webkit-scrollbar, .calcHeight::-webkit-scrollbar, .v-navigation-drawer__content::-webkit-scrollbar{
     width: 4px;
 }
 .updateForm::-webkit-scrollbar-thumb, .calcHeight::-webkit-scrollbar-thumb, .v-navigation-drawer__content::-webkit-scrollbar-thumb{
@@ -24,6 +24,20 @@ html{overflow-y: auto !important;}
     border-radius: 100px;
 }
 .updateForm::-webkit-scrollbar-track, .calcHeight::-webkit-scrollbar-track, .v-navigation-drawer__content::-webkit-scrollbar-track{
+    --tw-bg-opacity: 5;
+    background-color: rgba(75, 85, 99, var(--tw-bg-opacity));
+    --tw-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(216, 213, 213, 0.05);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+} */
+.updateForm::-webkit-scrollbar, .v-navigation-drawer__content::-webkit-scrollbar{
+    width: 4px;
+}
+.updateForm::-webkit-scrollbar-thumb, .v-navigation-drawer__content::-webkit-scrollbar-thumb{
+    --tw-bg-opacity: 5;
+    background-color: rgba(209, 213, 219, var(--tw-bg-opacity));
+    border-radius: 100px;
+}
+.updateForm::-webkit-scrollbar-track, .v-navigation-drawer__content::-webkit-scrollbar-track{
     --tw-bg-opacity: 5;
     background-color: rgba(75, 85, 99, var(--tw-bg-opacity));
     --tw-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(216, 213, 213, 0.05);
@@ -37,3 +51,55 @@ html{overflow-y: auto !important;}
 .fixedBtn{background: #f1ffe9;border: 1px solid #f1ffe9;border-radius: 4px;transition: all .3s ease-in-out;padding: 4px 8px;min-width: 95px;}
 .user-select-none{user-select: none !important;}
 .radio-switch .v-label {font-size: 14px;}
+
+
+
+/* task sheet style */
+
+.tasksheet {
+  background: #f4f6ff !important;
+  box-shadow: inset 0 0 0 1px #f4f6ff !important;
+  border: 1px solid #d2daff !important;
+}
+.addtask {
+  box-shadow: 0 17px 0 -16px #e5e5e5 !important;
+  background-color: #f5f5f5 !important;
+  padding: 0 0.8rem !important;
+  margin: 0px !important;
+  border: 1px solid #e5e5e5 !important;
+}
+.tasksheet:hover {
+  background-color: #f5f5f5 !important;
+}
+.calcHeight {
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+.calcHeight-1 {
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+.addTaskInput {
+  height: 40px;
+  width: 100% !important;
+  background-color: #ffffff !important;
+  text-indent: 10px;
+}
+.addTaskInput:focus {
+  outline: 1px solid #0981f1;
+  border-radius: 4px !important;
+}
+.openedPanel .taskswrapper {
+  width: calc(100% - 400px);
+}
+.taskswrapper {
+  width: 100%;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
