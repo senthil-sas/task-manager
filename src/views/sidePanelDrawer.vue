@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <v-navigation-drawer class="updatepanel" elevation='1' v-model="updatePanel" :width="panelWidth" fixed right>
+    <v-navigation-drawer class="updatepanel" v-model="updatePanel" overlay-color="transparent" :width="panelWidth" fixed right>
       <div class="d-flex pa-3 bg-f5 align-center updatePanelHead">
         <span class="fsize14 secondaryColor font-weight-bold pa-1">{{currentTask.task_name}}</span>
         <v-btn depressed color="light-blue" class="text-capitalize fsize12 white--text ml-4" height="24" @click="$store.commit('setExpandPanel' , expandPanel = !expandPanel)" v-model="expandPanel">More details</v-btn>
@@ -55,11 +55,12 @@
                   <v-file-input dense append-icon="mdi-folder-open" label="Add file" hide-details="" prepend-icon="" outlined></v-file-input>
                 </v-col>
                 <v-col sm="6" md="6" lg="5" class="pa-0 ma-2 d-flex align-center justify-center">
-                  <v-switch inset v-model="billable" hide-details dense :ripple="false" class="fsize12 secondaryColor ml-2 mt-0" label="Billable"></v-switch>
+                  <v-switch sm v-model="billable" inset flat hide-details dense :ripple="false" color="light-blue" class="fsize12 secondaryColor ml-2 mt-0" label="Billable"></v-switch>
                 </v-col>
               </v-row>
               <!-- <v-textarea filled v-model="comments" placeholder="Comments" class="px-3 secondaryColor" :rules="commentRules"></v-textarea> -->
-              <vue-editor  @image-added="handleImageAdded" class="pa-4" v-model="content"></vue-editor>
+              <vue-editor @image-added="handleImageAdded" class="pa-4" v-model="content"></vue-editor>
+              <!-- <v-rich-text-editor v-model="content" /> -->
             </v-form>
           </div>
         </div>
@@ -67,7 +68,7 @@
 
       <!-- footer -->
       <div class="footerPad d-flex align-center justify-space-between pa-2 ">
-        <span class="fsize12 secondaryColor pr-6">Create on yesterday</span>
+        <a class="fsize12 primaryColor pr-6">Create on {{getDateString(new Date(currentTask.start_date), "d-M-y")}}</a>
         <div>
           <v-btn depressed color="grey lighten-2" @click="closePanel()" class="text-capitalize black--text mr-2">Cancel</v-btn>
           <v-btn depressed color="light-blue" @click="updateTask()" class="text-capitalize white--text">Update</v-btn>
@@ -80,10 +81,12 @@
 <script>
 import { VueEditor } from "vue2-editor";
 import { mapGetters } from "vuex";
+import commonFunc from "../mixins/common";
 export default {
+  mixins: [commonFunc],
   data: () => ({
     // update task fields
-    actualEffort: "01:00",
+    actualEffort: "00:00",
     assignedTo: JSON.parse(localStorage.getItem("currentUserData")).emp_name,
     project: "",
     manager: "",
@@ -98,12 +101,12 @@ export default {
     commentRules: [
       (v) => !!v || "Comments is required",
       (v) =>
-        (v && v.length >= 25) || "Comments must be greater than 25 characters",
+        (v && v.length >= 25) || "Comments must be greater than 50 characters",
     ],
-     content: "<span>Description</span>"
+    content: "<span>Description</span>",
   }),
   components: {
-    VueEditor
+    VueEditor,
   },
   computed: {
     ...mapGetters({ currentTask: "getCurrentTask" }),
@@ -143,6 +146,29 @@ export default {
       this.$store.commit("setUpdateTaskPanel", "close");
     },
     updateTask(task) {
+      var projId;
+      var managerId;
+      this.projectList.forEach((el) => {
+        if (el.project_name == this.project) {
+          projId = el.project_id;
+        }
+        if (el.manager_name == this.currentTask.task_manager) {
+          managerId = el.manager;
+        }
+      });
+      let jsonObj = {
+        actual_hour: this.actualEffort,
+        end_date: this.dueDate,
+        task_status: this.status,
+        assigned_to: this.assignedTo,
+        task_manager: managerId,
+        project_name: this.project,
+        project_id: projId,
+        description: "",
+        comments: this.comments,
+        id: this.currentTask.id,
+      };
+      this.$store.dispatch("task/updateTask", jsonObj);
       this.$toast.success(
         `Task Updated Successfully (${this.currentTask.task_name})`,
         {
@@ -202,7 +228,7 @@ export default {
     };
     this.$store.dispatch("project/getProjects");
     this.$store.dispatch("employee/getEmployees");
-    this.$store.dispatch("task/getComments", jsonObj);
+    // this.$store.dispatch("task/getComments", jsonObj);
   },
 };
 </script>
@@ -250,5 +276,11 @@ export default {
   position: fixed;
   width: 100%;
   z-index: 1;
+}
+.grey-clr {
+  background-color: #ededed;
+}
+.updatepanel .v-navigation-drawer__border {
+  width: 0px !important;
 }
 </style>

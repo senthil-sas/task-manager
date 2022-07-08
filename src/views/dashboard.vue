@@ -7,7 +7,7 @@
         </div>
 
         <v-tabs class="sidebar mt-3" vertical v-model="selectedTab">
-          <v-tab class="sidebarTab" v-for="(item, i) in menuList" @click="changeRoute(item)" :key=i>
+          <v-tab class="sidebarTab" v-for="(item, i) in $store.state.currentUser == 'Customer' ? clientMenuList : menuList" @click="changeRoute(item)" :key=i>
             <div class="menu">
               <img :src="getImgUrl(item.svg)" class="unactive_img" />
               <div class="fsize11 primaryColor text-overflow">{{ item.text }}</div>
@@ -19,12 +19,20 @@
     </v-navigation-drawer>
 
     <v-app-bar elevation="1" color="white" app dense outlined height="56px">
-      <!-- <v-app-bar-nav-icon @click="drawer = !drawer" class="ma-0"></v-app-bar-nav-icon> -->
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="ma-0"></v-app-bar-nav-icon>
       <div class="ml-3 primaryColor">{{$store.state.appName}} - <span class="text-capitalize">{{$router.currentRoute.path.replace("/", "")}}</span> </div>
       <v-spacer></v-spacer>
       <div class="text-right">
-        <v-avatar color="primary" class="mr-3 white--text fsize14" size="26">{{userDetails.emp_name.slice(0,1)}}</v-avatar>
-        <v-btn @click="logoutDialog = true" depressed text outlined color="indigo" class="text-capitalize fsize16">Logout</v-btn>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-avatar v-bind="attrs" v-on="on" color="indigo" class="mr-3 white--text fsize14 user-select-none" size="40">{{userDetails.emp_name.slice(0,2)}}</v-avatar>
+          </template>
+          <v-list class="py-0 cardBoxShadow" min-width="100">
+            <v-list-item class="" @click="dropHandler(item)" v-for="(item, index) in $store.state.currentUser == 'Customer' ? customerDropdownList : dropdownList" :key="index">
+              <v-list-item-title class="fsize12 secondaryColor">{{ item }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </v-app-bar>
 
@@ -34,15 +42,23 @@
       <!-- </transition> -->
     </v-main>
 
-    <v-dialog v-model="logoutDialog" width="400" overlay-color="grey">
-      <v-card class="pa-4" height="150">
-        <div class="secondaryColor fsize14">Are you sure want to logout ?</div>
-        <div class="d-flex justify-end mt-14">
-          <v-btn height="32" width="86" @click="logoutDialog = false" depressed color="lighten-4" outlined class="text-capitalize fsize12 mr-2">
-            Cancel
+    <v-dialog v-model="logoutDialog" width="400" overlay-color="#a2a2a2">
+      <v-card class="pa-4" height="170">
+        <div class="secondaryColor fsize14 d-flex justify-space-between">
+          <div>Are you sure want to logout ?</div>
+          <div>
+            <v-icon @click="logoutDialog = false" color="light-blue">mdi-close-circle</v-icon>
+          </div>
+        </div>
+        <div class="fsize14 mt-2 primaryColor">
+          ! If you want to checkout make sure you click on checkout and logout
+        </div>
+        <div class="d-flex justify-end mt-8">
+          <v-btn height="32" width="86" @click="logout()" depressed color="light-blue" outlined class="text-capitalize fsize12 mr-2">
+            Logout
           </v-btn>
-          <v-btn height="32" width="86" @click="logout()" depressed color="light-blue" class="text-capitalize white--text fsize12">
-            Confirm
+          <v-btn height="32" width="86" @click="checkout()" depressed color="red" class="text-capitalize white--text fsize12">
+            Checkout
           </v-btn>
         </div>
       </v-card>
@@ -65,8 +81,13 @@ export default {
       // { text: "Task", subText: "", svg: "task", route: "task" },
       { text: "Teams", subText: "", svg: "teams", route: "team" },
       { text: "Report", subText: "", svg: "taskreports", route: "report" },
-      { text: "Task-New", subText: "", svg: "taskreports", route: "task1" },
+      { text: "Tasks", subText: "", svg: "taskreports", route: "task1" },
     ],
+    clientMenuList:[
+      { text: "Tasks", subText: "", svg: "taskreports", route: "task" }
+    ],
+    dropdownList: ["Home","Reports","Tasks", "Logout"],
+    customerDropdownList:["Logout"],
     drawer: null,
     logoutDialog: false,
   }),
@@ -95,8 +116,39 @@ export default {
         icon: true,
         rtl: false,
       });
+      this.logoutDialog = false;
       this.$router.push("/");
     },
+    checkout() {
+      var empId = JSON.parse(localStorage.getItem("currentUserData"));
+      if (empId) {
+        let jsonObj = {
+          emp_id: empId.emp_id,
+        };
+        this.$store.dispatch("login/ckeckout", jsonObj);
+        this.$toast.success("Checkout Successfully", {
+          position: "top-right",
+          timeout: 1500,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: false,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+      }
+    },
+    
+    dropHandler(item) {
+      item == 'Logout' ? this.logoutDialog = true : this.logoutDialog = false
+      item == 'Reports' ? this.$router.push('/report').catch(() => {}) : ''
+      item == 'Home' ? this.$router.push('/dashboard').catch(() => {}) : ''
+      item == 'Tasks' ? this.$router.push('/task1').catch(() => {}) : ''
+    }
   },
 
   computed: {

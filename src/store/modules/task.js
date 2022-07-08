@@ -17,6 +17,9 @@ const task = {
         pendingTasks: [],
         completedTasks: [],
         reviewTasks: [],
+
+        // customer
+        customerTasks: [],
     },
     mutations: {
         setTasks (state, payload) {
@@ -35,6 +38,7 @@ const task = {
             payload.forEach(el => {
                 el.assigned_to == empId ? state.currentUserTaks.push(el) : ''
             });
+            console.log(state.currentUserTaks);
             this.commit('task/setCurrentTasks', state.currentUserTaks)
             this.commit('task/setAllTypesTasks', state.currentUserTaks)
         },
@@ -130,6 +134,10 @@ const task = {
                 )
             }
             this.commit('task/setCurrentTasks', state.currentTasks)
+        },
+
+        setCustomerTasks (state, payload) {
+            state.customerTasks = payload
         }
 
     },
@@ -148,9 +156,10 @@ const task = {
                 }
             }).finally(() => { commit('setLoader', false, { root: true }) })
         },
-        async createTasks ({ commit, dispatch }, payload) {
-            service.insertTasks().then(response => {
-                if (response.status == 200 && response.data.result) {
+
+        async createTask ({ commit, dispatch }, payload) {
+            await service.createTask(payload).then(response => {
+                if (response.status == 200) {
                     dispatch('getTasks');
                 }
             }).catch(error => {
@@ -159,6 +168,23 @@ const task = {
                 }
             }).finally(() => { commit('setLoader', false, { root: true }) })
         },
+
+        async updateTask ({ commit, dispatch }, payload) {
+            await service.updateTask(payload).then(response => {
+                if (response.status == 200) {
+                    dispatch('getTasks');
+                }
+            }).finally(() => { commit('setLoader', false, { root: true }) })
+        },
+
+        async taskStatusUpdate ({ commit, dispatch }, payload) {
+            await service.statusUpdate(payload).then(response => {
+                if (response.status == 200) {
+                    dispatch('getTasks');
+                }
+            }).finally(() => { commit('setLoader', false, { root: true }) })
+        },
+
         async getComments ({ commit }, payload) {
             await service.getComments(payload).then(response => {
                 if (response.status == 200 && response.data.result) {
@@ -167,6 +193,18 @@ const task = {
                     commit('setCommentsData', []);
                 }
             }).finally(() => { })
+        },
+
+        async getCustomerTasks ({ commit,rootGetters }, payload) {
+            var projId = localStorage.getItem('clientProjectId')
+            commit('setLoader', true, { root: true })
+            await service.getCustomerTasks({ project_id: projId }).then(response => {
+                if (response.status == 200 && response.data.result) {
+                    commit('setCustomerTasks', response.data.result);
+                } else {
+                    commit('setCustomerTasks', []);
+                }
+            }).finally(() => { commit('setLoader', false, { root: true }) })
         }
     },
     getters: {
@@ -205,6 +243,9 @@ const task = {
         getReviewTasks: state => {
             return state.reviewTasks;
         },
+        getCustomerTasks: state => {
+            return state.customerTasks;
+        }
     }
 }
 export default task;

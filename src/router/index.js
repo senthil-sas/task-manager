@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,14 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  var currentUser = localStorage.getItem('currentUser');
+  var projId = localStorage.getItem('clientProjectId');
+  currentUser ? store.commit('setCurrentUser', currentUser, { root: true }) : ''
+  projId ? store.commit('setClientProjectId', projId, { root: true }) : ''
+  next();
 })
 
 export default router

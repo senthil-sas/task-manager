@@ -6,12 +6,20 @@ const project = {
     state: {
         projects: [],
         projectList:[],
+        managersData: [],
     },
     mutations: {
         setProjects (state, payload) {
             state.projects = payload
             payload.forEach(el => {
                 state.projectList.push(el.project_name)
+            })
+        },
+        setManagersData(state, payload) {
+            payload.forEach(el => {
+                if (el.manager_name && el.manager_name != ' ') {
+                    state.managersData.push(el.manager_name)
+                }
             })
         }
     },
@@ -21,8 +29,18 @@ const project = {
             service.getProjects({}).then(response => {
                 if (response.status == 200 && response.data.result) {
                     commit('setProjects', response.data.result);
+                    commit('setManagersData', response.data.result);
                 }
             }).finally(() => { commit('setLoader', false, { root: true }) })
+        },
+        async createProject ({ commit, dispatch }, payload) {
+            commit('setLoader', true, { root: true })
+            service.createProject(payload).then(response => {
+                if (response.status == 200 && response.data['status'] == 1) {
+                    dispatch('getProjects')
+                }
+            }).finally(() => { commit('setLoader', false, { root: true }) })
+            commit('setLoader', false, { root: true })
         }
     },
     getters: {
@@ -31,6 +49,9 @@ const project = {
         },
         getProjectsList: state => {
             return state.projectList;
+        },
+        getManagersData: state => {
+            return state.managersData;
         }
     }
 }

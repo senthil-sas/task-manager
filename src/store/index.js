@@ -11,6 +11,8 @@ import project from '../store/modules/project.js'
 import task from '../store/modules/task.js'
 import report from '../store/modules/report.js'
 
+// 
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -22,7 +24,8 @@ export default new Vuex.Store({
     updateTaskPanel:'close',
     currentTask:[],
     expandPanel: false,
-    panelWidth : '40%'
+    panelWidth : '40%',
+    currentUser: '',
   },
   mutations: {
     setLoader ( state, payload ) {
@@ -37,6 +40,12 @@ export default new Vuex.Store({
     setExpandPanel ( state, payload ) {
       state.expandPanel = payload
       state.panelWidth = payload ? 'calc(100% - 74px)' : '40%'
+    },
+    setCurrentUser ( state, payload ) {
+      state.currentUser = payload
+    },
+    setClientProjectId ( state, payload ) {
+      state.clientProjectId = payload
     }
   },
   actions: {},
@@ -55,6 +64,12 @@ export default new Vuex.Store({
     },
     getPanelWidth: state => {
       return state.panelWidth
+    },
+    getCurrentUser: state => {
+      return state.currentUser
+    },
+    getClientProjectId: state => {
+      return state.clientProjectId
     }
   },
   modules: { login, employee, customer, project, task, report }

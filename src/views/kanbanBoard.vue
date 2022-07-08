@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="ma-4 d-flex align-center justify-space-between position-fixed">
+    <div class="mx-4 d-flex align-center justify-space-between position-fixed">
       <v-breadcrumbs color="indigo--text" class="pa-0 mr-5" :items="titles" large></v-breadcrumbs>
       <v-spacer></v-spacer>
       <v-radio-group v-model="taskSwitch" class="radio-switch" row dense>
@@ -25,7 +25,7 @@
                 <span class="primaryColor fsize12">Open <span v-if="openTasks.length != 0">({{openTasks.length}})</span></span>
                 <v-icon color="light-blue" @click="addTask">mdi-plus-circle</v-icon>
               </div>
-              <div class="overflow-y-auto h-550 allTasks">
+              <div class="overflow-y-auto h-550 allTasks" @drop.prevent="currentStatus = 'Open'">
                 <div class="pa-3 m-h-76">
                   <draggable tag="div" :group="{ name: 'section', put: true }" :list="openTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard rounded-lg" v-for="(t,index) in openTasks" :key="index">
@@ -39,6 +39,11 @@
                         <div class="secondaryColor fsize10 grey--text">{{t.project_name}}</div>
                         <div class="secondaryColor fsize10 grey--text">{{getDateString(new Date(t.end_date), "d-M-y")}}</div>
                       </div>
+                      <!-- input field -->
+                      <!-- <div class="d-flex justify-space-between">
+                        <div></div>
+                        <input class="datePicker"  v-model="pricing.name[index]" type="date" placeholder="Add due Date">
+                      </div> -->
                     </v-card>
                   </draggable>
                 </div>
@@ -53,7 +58,7 @@
                 <span class="primaryColor fsize12">In Progress <span v-if="inProgressTasks.length != 0">({{inProgressTasks.length}})</span></span>
                 <v-icon color="light-blue" @click="addTask">mdi-plus-circle</v-icon>
               </div>
-              <div class="overflow-y-auto h-550">
+              <div class="overflow-y-auto h-550" @drop.prevent="currentStatus = 'In-Progress'">
                 <div class="pa-3 m-h-76">
                   <draggable tag="div" :group="{ name: 'section', put: true }" :list="inProgressTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard" v-for="(t,tidx) in inProgressTasks" :key="tidx">
@@ -77,11 +82,11 @@
           <!-- Fixed column -->
           <div class="boards mr-3">
             <v-card elevation="1" class="mx-auto ma-2 d-flex flex-column" min-height="550" width="270">
-              <div class='text-center grey lighten-5 cardHead d-flex align-center justify-space-between px-4'>
+              <div class='text-center grey lighten-2 cardHead d-flex align-center justify-space-between px-4'>
                 <span class="primaryColor fsize12">Fixed <span v-if="fixedTasks.length != 0">({{fixedTasks.length}})</span></span>
                 <v-icon color="light-blue" @click="addTask">mdi-plus-circle</v-icon>
               </div>
-              <div class="overflow-y-auto h-550 allTasks">
+              <div class="overflow-y-auto h-550 allTasks" @drop.prevent="currentStatus = 'Fixed'">
                 <div class="pa-3 m-h-76">
                   <draggable tag="div" :group="{ name: 'section', put: true }" :list="fixedTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard rounded-lg" v-for="(t,index) in fixedTasks" :key="index">
@@ -139,7 +144,7 @@
               </div>
               <div class="overflow-y-auto h-550 allTasks">
                 <div class="pa-3 m-h-76">
-                  <draggable tag="div" :group="{ name: 'section', put: true }" :list="cancelledTasks" v-bind="dragOptions" :move="drag_handler">
+                  <draggable tag="div" @drop.prevent="currentStatus = 'Cancelled'" :group="{ name: 'section', put: true }" :list="cancelledTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard rounded-lg" v-for="(t,index) in cancelledTasks" :key="index">
                       <div class="d-flex align-center justify-space-between">
                         <div class="text-left">
@@ -167,7 +172,7 @@
               </div>
               <div class="overflow-y-auto h-550">
                 <div class="pa-3 m-h-76">
-                  <draggable tag="div" :group="{ name: 'section', put: true }" :list="completedTasks" v-bind="dragOptions" :move="drag_handler">
+                  <draggable tag="div" @drop.prevent="currentStatus = 'Completed'" :group="{ name: 'section', put: true }" :list="completedTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard" v-for="(t,tidx) in completedTasks" :key="tidx">
                       <div class="d-flex align-center justify-space-between">
                         <div class="text-left">
@@ -194,7 +199,7 @@
               </div>
               <div class="overflow-y-auto h-550 allTasks">
                 <div class="pa-3 m-h-76">
-                  <draggable tag="div" :group="{ name: 'section', put: true }" :list="reviewTasks" v-bind="dragOptions" :move="drag_handler">
+                  <draggable tag="div" @drop.prevent="currentStatus = 'Review'" :group="{ name: 'section', put: true }" :list="reviewTasks" v-bind="dragOptions" :move="drag_handler">
                     <v-card :ripple="false" @click="updateTask(t)" min-height="76" class="pa-1 my-2 taskCard rounded-lg" v-for="(t,index) in reviewTasks" :key="index">
                       <div class="d-flex align-center justify-space-between">
                         <div class="text-left">
@@ -234,9 +239,13 @@ export default {
       { text: "Tasks", disabled: false, href: "task1" },
       { text: "Board", disabled: false, href: "kanbanBoard" },
     ],
+    currentStatus: "Open",
     opentaskmodel: [],
     taskSwitch: "user",
     sortingBool: true,
+    pricing: {
+      name: [],
+    },
   }),
   components: {
     draggable,
@@ -256,7 +265,7 @@ export default {
       reviewTasks: "getReviewTasks",
       completedTasks: "getCompletedTasks",
     }),
-    ...mapGetters({ loader: "getLoader" }),
+    ...mapGetters({ loader: "getLoader", currentTask: "getCurrentTask" }),
     ...mapGetters("project", { projectList: "getProjectsList" }),
     ...mapGetters("employee", { employeeList: "getEmployeeList" }),
     ...mapGetters({ sidePanelState: "getUpdateTaskPanel" }),
@@ -276,13 +285,23 @@ export default {
     addColumn() {},
 
     updateTask(task) {
-      this.$store.commit("setUpdateTaskPanel", "open");
+      // this.$store.commit("setUpdateTaskPanel", "open");
       this.$store.commit("setCurrentTask", task);
       console.log(task);
+      console.log(this.pricing.name);
     },
 
     drag_handler(evt) {
-      console.log(evt.draggedContext, status);
+      console.log(evt.draggedContext);
+      console.log(this.currentStatus);
+      var userData = JSON.parse(localStorage.getItem("currentUserData"));
+      if (userData) {
+        // this.$store.dispatch("task/taskStatusUpdate", {
+        //   task_status: this.currentStatus,
+        //   task_id: evt.draggedContext.element.task_id,
+        //   emp_id: userData.emp_id,
+        // });
+      }
     },
 
     minutesToHours(minutes) {
@@ -340,5 +359,13 @@ export default {
 .testimonial-group > .boardRow > .boards {
   display: inline-block !important;
   float: none !important;
+}
+.datePicker {
+  width: 50%;
+  border: 1px solid #e5e5e5 !important;
+  text-indent: 2px;
+  font-size: 10px;
+  border-radius: 4px;
+  color: #808080;
 }
 </style>

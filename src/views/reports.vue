@@ -20,7 +20,7 @@
       <div>
         <v-btn height="40" color="primary" depressed class="text-capitalize" @click="getReports">Submit</v-btn>
       </div>
-     
+
     </div>
     <v-card class="ma-4">
       <v-simple-table fixed-header height="84vh" id="tableData" v-if="reportsData.length != 0">
@@ -31,9 +31,9 @@
             <th class="tableHeader bg-lightgrey text-center">Check In</th>
             <th class="tableHeader bg-lightgrey text-center">Check Out</th>
             <th class="tableHeader bg-lightgrey text-center">Comment</th>
-            <th class="tableHeader bg-lightgrey text-center">Office Hours</th>
+            <th class="tableHeader bg-lightgrey text-left">Office Hours</th>
             <th class="tableHeader bg-lightgrey text-center">Avg/Day (off)</th>
-            <th class="tableHeader bg-lightgrey text-center">Task Time</th>
+            <th class="tableHeader bg-lightgrey text-left">Task Time</th>
             <th class="tableHeader bg-lightgrey text-center">Avg/Day (Task)</th>
           </tr>
         </thead>
@@ -44,15 +44,15 @@
             <td class="tableContent text-center">{{i.check_in}}</td>
             <td class="tableContent text-center">{{i.check_out}}</td>
             <td class="tableContent text-center">{{i.no_of_comments}}</td>
-            <td class="tableContent text-center">{{ i.total_office_hours}} ({{i.percentage_hours_logged}}%)</td>
+            <td class="tableContent text-left">{{ convertMinsToHrsMins(i.total_office_hours)}} ({{i.percentage_hours_logged}}%)</td>
             <td class="tableContent text-center">{{i.avgofficehours}}</td>
-            <td class="tableContent text-center">{{i.total_task_hours}} ({{i.percentage_task_hours}}%)</td>
+            <td class="tableContent text-left">{{convertMinsToHrsMins(i.total_task_hours)}} ({{i.percentage_task_hours}}%)</td>
             <td class="tableContent text-center">{{i.avgtaskhours}}</td>
           </tr>
         </tbody>
       </v-simple-table>
       <v-card-text class="text-center" v-else>
-          No data found
+        No data found
       </v-card-text>
     </v-card>
   </div>
@@ -66,8 +66,12 @@ export default {
   data: () => ({
     fromDatePicker: false,
     toDatePicker: false,
-    fromDate: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-    toDate: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    fromDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .substr(0, 10),
+    toDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .substr(0, 10),
   }),
   computed: {
     ...mapGetters("report", {
@@ -94,14 +98,21 @@ export default {
       const [year, month, day] = date.split("-");
       return `${day}/${month}/${year}`;
     },
-    getReports(){
+    getReports() {
       var jsonObj = {
-      dateProvided: "true",
-      start_Date: this.formatDateIndian(this.fromDate),
-      end_Date: this.formatDateIndian(this.toDate) 
-    };
-    this.$store.dispatch("report/getReports",jsonObj);
-    }
+        dateProvided: "true",
+        start_Date: this.formatDateIndian(this.fromDate),
+        end_Date: this.formatDateIndian(this.toDate),
+      };
+      this.$store.dispatch("report/getReports", jsonObj);
+    },
+    convertMinsToHrsMins: function (minutes) {
+      var h = Math.floor(minutes / 60);
+      var m = minutes % 60;
+      h = h < 10 ? "0" + h : h;
+      m = m < 10 ? "0" + m : m;
+      return h +':'+ m;
+    },
   },
   watch: {
     fromDate(val) {

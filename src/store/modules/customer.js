@@ -5,12 +5,14 @@ const customer = {
     namespaced: true,
     state: {
         customersData: [],
+        allCustomerNames: [],
     },
     mutations: {
         setCustomers (state, payload) {
             state.customersData = []
             payload.forEach(el => {
                 el.cust_name != ' ' ? state.customersData.push(el) : ''
+                el.cust_name != ' ' ? state.allCustomerNames.push(el.cust_name) : ''
             })
         }
     },
@@ -22,11 +24,22 @@ const customer = {
                     commit('setCustomers', response.data.result);
                 }
             }).finally(() => { commit('setLoader', false, { root: true }) })
+        },
+        async createCustomer ({ commit,dispatch }, payload) {
+            commit('setLoader', true, { root: true })
+            let response = await service.createCustomer(payload)
+            if (response.status == 200 && response.data['status'] == 1) {
+                dispatch('getCustomers')
+            }
+            commit('setLoader', false, { root: true })
         }
     },
     getters: {
         getCustomers: state => {
             return state.customersData;
+        },
+        getAllCustomerNames: state => {
+            return state.allCustomerNames;
         }
     }
 }
