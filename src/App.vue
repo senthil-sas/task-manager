@@ -11,3 +11,9 @@ export default {
   data: () => ({}),
 };
 </script>
+
+<style>
+/* .v-data-table--fixed-header > .v-data-table__wrapper {
+    overflow-y: clip !important;
+} */
+</style>

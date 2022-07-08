@@ -6,7 +6,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-text-field v-model="formatedFromDate" outlined persistent-hint label="From Date" hide-details append-icon="mdi-calendar" readonly dense v-bind="attrs" v-on="on"></v-text-field>
           </template>
-          <v-date-picker v-model="fromDate" :show-current="true" :allowed-dates="(date) => date <= new Date().toISOString().substr(0, 10)" no-title @input="fromDatePicker = false"></v-date-picker>
+          <v-date-picker v-model="fromDate" :show-current="true" :min="fromMinDate" :max="fromMaxDate" no-title @input="fromDatePicker = false"></v-date-picker>
         </v-menu>
       </div>
       <div class="mr-3">
@@ -14,7 +14,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-text-field v-model="formatedToDate" outlined persistent-hint label="To Date" hide-details append-icon="mdi-calendar" readonly dense v-bind="attrs" v-on="on"></v-text-field>
           </template>
-          <v-date-picker v-model="toDate" :show-current="true" :allowed-dates="(date) => date <= new Date().toISOString().substr(0, 10)" no-title @input="toDatePicker = false"></v-date-picker>
+          <v-date-picker v-model="toDate" :show-current="true" :min="toMinDate" :max="toMaxDate" no-title @input="toDatePicker = false"></v-date-picker>
         </v-menu>
       </div>
       <div>
@@ -22,8 +22,11 @@
       </div>
 
     </div>
+    <div>
+           
+     </div>
     <v-card class="ma-4">
-      <v-simple-table fixed-header height="84vh" id="tableData" v-if="reportsData.length != 0">
+      <v-simple-table fixed-header id="tableData" v-if="reportsData.length != 0">
         <thead>
           <tr class="tableRow">
             <th class="tableHeader bg-lightgrey">S.No</th>
@@ -46,6 +49,13 @@
             <td class="tableContent text-center">{{i.no_of_comments}}</td>
             <td class="tableContent text-left">{{ convertMinsToHrsMins(i.total_office_hours)}} ({{i.percentage_hours_logged}}%)</td>
             <td class="tableContent text-center">{{i.avgofficehours}}</td>
+            <td class="tableContent text-center">{{i.total_task_hours}} ({{i.percentage_task_hours}}%)</td>
+            <td class="tableContent text-center">
+              <!-- {{i.avgtaskhours}} -->
+                <progressbar :percentage="contentProgress" :color="particularColor" :rounded="true" :indeterminate="false" class="mx-2 mb-2 h-5">
+        <span class="text-xs text-white w-full d-flex justify-center pr-2">{{contentProgress}}%</span>
+      </progressbar>
+              </td>
             <td class="tableContent text-left">{{convertMinsToHrsMins(i.total_task_hours)}} ({{i.percentage_task_hours}}%)</td>
             <td class="tableContent text-center">{{i.avgtaskhours}}</td>
           </tr>
@@ -61,11 +71,33 @@
 
 <script>
 import { mapGetters } from "vuex";
+import progressbar from '../components/baseProgress.vue'
 export default {
   name: "report",
   data: () => ({
     fromDatePicker: false,
     toDatePicker: false,
+    fromDate: '',
+    toDate: '',
+    fromMaxDate : '',
+    toMaxDate: '',
+    fromMinDate: '',
+    toMinDate: '',
+    particularColor: 'yellow',
+     colors: [
+        "gray",
+        "yellow",
+        "orange",
+        "red",
+        "green",
+        "teal",
+        "blue",
+        "indigo",
+        "purple",
+        "pink"
+      ],
+      progressStart: 0,
+      contentProgress: 90,
     fromDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .substr(0, 10),
@@ -73,6 +105,9 @@ export default {
       .toISOString()
       .substr(0, 10),
   }),
+  components:{
+    progressbar
+  },
   computed: {
     ...mapGetters("report", {
       reportsData: "getReports",
@@ -116,10 +151,14 @@ export default {
   },
   watch: {
     fromDate(val) {
-      console.log(this.formatDateIndian(val));
+     this.toMinDate = val
     },
+    toDate(val){
+     this.fromMaxDate = val
+    }
   },
   created() {
+    this.fromDate = this.toDate = this.fromMaxDate = this.toMaxDate = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)
     this.getReports();
   },
 };

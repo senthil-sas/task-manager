@@ -36,7 +36,7 @@
       </div>
     </v-app-bar>
 
-    <v-main class="calcHeight-main main-content">
+    <v-main class="main-content">
       <!-- <transition name="slide"> -->
       <router-view></router-view>
       <!-- </transition> -->
@@ -251,6 +251,9 @@ export default {
   overflow: hidden !important;
   width: 60px;
 }
+
+.main-content{background-color: #e8e8e8a6;padding: 56px 0px 0px 76px}
+
 /* .calcHeight-main {
   height: calc(100vh - 56px) !important;
 } */

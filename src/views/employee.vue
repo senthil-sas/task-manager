@@ -7,7 +7,7 @@
       </v-btn>
     </div>
     <v-card class="ma-4">
-      <v-simple-table fixed-header height="86vh" class="" id="tableData">
+      <v-simple-table fixed-header  class="" id="tableData">
           <thead>
             <tr class="tableRow">
               <th class="tableHeader bg-lightgrey">S.No</th>
